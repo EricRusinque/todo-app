@@ -4,7 +4,7 @@ import { renderTodos } from './use-cases';
 
 const elementsIDs = {
     TodoList: '.todo-list',
-    NewTodoInput: '#new-todo-input'
+    NewTodoInput: '#new-todo-input',
 }
 
 
@@ -32,7 +32,9 @@ export const App = ( elementId ) => {
     // Referencias HTML
 
     const newDescriptionInput = document.querySelector( elementsIDs.NewTodoInput );
-
+    const todoListUL = document.querySelector( elementsIDs.TodoList );
+    const destroy = document.querySelector( elementsIDs.DestroyButton );
+    
     // Listeners
     newDescriptionInput.addEventListener( 'keyup', (event) => {
         if( event.keyCode !== 13 ) return;
@@ -40,6 +42,21 @@ export const App = ( elementId ) => {
 
         todoStore.addTodo( event.target.value );
         displayTodos();
-        event.target.value = ''
+        event.target.value = '';
     });
+
+    todoListUL.addEventListener('click', (event) => {
+        const element = event.target.closest('[data-id]');
+        todoStore.toggleTodo( element.getAttribute('data-id'));
+        displayTodos();
+    });
+
+    todoListUL.addEventListener('click', (event) => {
+        const isDestroyElement = event.target.className === 'destroy';
+        const element = event.target.closest('[data-id]');
+
+        if(  !element || !isDestroyElement ) return; 
+        todoStore.deleteTodo( element.getAttribute('data-id'));
+        displayTodos();
+    })
 }
