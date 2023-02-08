@@ -28,11 +28,9 @@ const loadStore = () => {
 const getTodos = ( filter = Filters.All ) => {
     switch ( filter ) {
         case Filters.All :
-            return [...state.todos]
-        
+            return [...state.todos];
         case Filters.Completed:
-            return state.todos.filter( todo => todo.done ); 
-        
+            return state.todos.filter( todo => todo.done );        
         case Filters.Pending:
             return state.todos.filter( todo => !todo.done);
         default:
@@ -52,8 +50,13 @@ const addTodo = ( description ) => {
     state.todos.push( new Todo(description));
 };
 
-const toggleTodo = (todoId) => {
-    throw new Error('Not implemented');
+const toggleTodo = ( todoId ) => {
+    state.todos = state.todos.map( todo => { 
+        if( todo.id === todoId ){
+            todo.done = !todo.done;
+        }
+        return todo;
+    }); 
 };
 
 const deleteTodo = ( todoId ) => {
@@ -66,7 +69,7 @@ const deleteCompleted = () => {
 
 /**
  * 
- * @param {* Filters } newFilter 
+ * @param { Filters } newFilter 
  */
 
 const setFilter = ( newFilter =  Filters.All ) => {
