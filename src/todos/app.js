@@ -1,11 +1,13 @@
-import todoStore from '../store/todo.store';
+import todoStore, { Filters } from '../store/todo.store';
 import html from './app.html?raw';
-import { renderTodos } from './use-cases';
+import { renderPending, renderTodos } from './use-cases';
 
 const elementsIDs = {
     clearCompletedButton: '.clear-completed',
     TodoList: '.todo-list',
     NewTodoInput: '#new-todo-input',
+    TodoFilters: '.filtro',
+    PendingCountLabel: '#pending-count'
 }
 
 
@@ -16,10 +18,13 @@ const elementsIDs = {
 
 export const App = ( elementId ) => {
 
-
+    const updatePendingCount = () => {
+        renderPending(elementsIDs.PendingCountLabel);
+    }
     const displayTodos = () => {
         const todos = todoStore.getTodos( todoStore.getCurrentFilter() );
         renderTodos( elementsIDs.TodoList, todos );
+        updatePendingCount();
     }
 
     // cuando la funcion App() se llama
@@ -35,7 +40,7 @@ export const App = ( elementId ) => {
     const newDescriptionInput = document.querySelector( elementsIDs.NewTodoInput );
     const todoListUL = document.querySelector( elementsIDs.TodoList );
     const clearCompletedButton = document.querySelector( elementsIDs.clearCompletedButton )
-    
+    const filtersUL = document.querySelectorAll( elementsIDs.TodoFilters );
     // Listeners
     newDescriptionInput.addEventListener( 'keyup', (event) => {
         if( event.keyCode !== 13 ) return;
@@ -64,5 +69,27 @@ export const App = ( elementId ) => {
     clearCompletedButton.addEventListener('click', () => {
         todoStore.deleteCompleted();
         displayTodos();
+    });
+
+    filtersUL.forEach( element =>  {
+
+        element.addEventListener('click', ( element ) => {
+            filtersUL.forEach( el => el.classList.remove('selected'))
+            element.target.classList.add('selected');
+
+            switch ( element.target.text ) {
+                case 'Todos':
+                    todoStore.setFilter( Filters.All)
+                break;
+                case 'Pendientes':
+                    todoStore.setFilter( Filters.Pending)
+                    break;
+                case 'Completados':
+                    todoStore.setFilter( Filters.Completed )
+                    break;
+            }
+            displayTodos();
+
+        })
     })
 }
